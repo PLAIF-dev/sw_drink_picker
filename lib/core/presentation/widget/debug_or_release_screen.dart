@@ -4,6 +4,13 @@ import 'package:drink_picker/connection/dependency_injection.dart';
 import 'package:drink_picker/connection/infrastructure/repository/connection_repository_fake_fail_impl.dart';
 import 'package:drink_picker/connection/infrastructure/repository/connection_repository_fake_success_impl.dart';
 import 'package:drink_picker/core/presentation/widget/home_screen.dart';
+import 'package:drink_picker/pick/actor/application/bloc/pick_state_notifier.dart';
+import 'package:drink_picker/pick/actor/application/service/pick_service.dart';
+import 'package:drink_picker/pick/actor/infrastructure/repository/pick_repository_fake_impl.dart';
+import 'package:drink_picker/pick/dependency_injection.dart';
+import 'package:drink_picker/pick/watcher/application/bloc/pick_watch_state_notifier.dart';
+import 'package:drink_picker/pick/watcher/application/service/pick_watch_service.dart';
+import 'package:drink_picker/pick/watcher/infrastructure/repository/pick_watch_repository_fake_impl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,12 +38,12 @@ class DebugOrReleaseScreen extends StatelessWidget {
                 onPressed: () => onTap(context, alwaysSuccessButton),
                 child: const Text('Debug Mode: Succeed all commands'),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => onTap(context, alwaysFailButton),
                 child: const Text('Debug Mode: Fail all commands'),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => onTap(context, const HomeScreen()),
                 child: const Text('Release Mode'),
@@ -53,8 +60,9 @@ class DebugOrReleaseScreen extends StatelessWidget {
   Widget get alwaysSuccessButton {
     return ProviderScope(
       overrides: [
+        // connection
         connectRepositoryProvider.overrideWithValue(
-          ConnectionRepositoryFakeSuccessImpl(),
+          const ConnectionRepositoryFakeSuccessImpl(),
         ),
         connectServiceProvider.overrideWith(
           (ref) => ConnectServiceImpl(
@@ -66,6 +74,36 @@ class DebugOrReleaseScreen extends StatelessWidget {
             ref.watch(connectServiceProvider),
           ),
         ),
+
+        // pick
+        pickRepositoryProvider.overrideWithValue(
+          const PickRepositoryFakeImpl(),
+        ),
+        pickServiceProvider.overrideWith(
+          (ref) => PickServiceImpl(
+            ref.watch(pickRepositoryProvider),
+          ),
+        ),
+        pickStateNotifierProvider.overrideWith(
+          (ref) => PickStateNotifier(
+            ref.watch(pickServiceProvider),
+          ),
+        ),
+
+        // pick state watcher
+        pickWatchRepositoryProvider.overrideWithValue(
+          const PickWatchRepositoryFakeImpl(),
+        ),
+        pickWatchServiceProvider.overrideWith(
+          (ref) => PickWatchServiceImpl(
+            ref.watch(pickWatchRepositoryProvider),
+          ),
+        ),
+        pickWatchStateNotifierProvider.overrideWith(
+          (ref) => PickWatchStateNotifier(
+            ref.watch(pickWatchServiceProvider),
+          ),
+        ),
       ],
       child: const HomeScreen(),
     );
@@ -75,7 +113,7 @@ class DebugOrReleaseScreen extends StatelessWidget {
     return ProviderScope(
       overrides: [
         connectRepositoryProvider.overrideWithValue(
-          ConnectionRepositoryFakeFailImpl(),
+          const ConnectionRepositoryFakeFailImpl(),
         ),
         connectServiceProvider.overrideWith(
           (ref) => ConnectServiceImpl(
