@@ -12,11 +12,12 @@ class ConnectStateNotifier extends StateNotifier<ConnectState> {
     event.handle(this);
   }
 
-  void connect(Uri uri) async {
-    final failureOrSuccess = await _service.connect(uri);
-    failureOrSuccess.fold(
-      (l) => state = ConnectState.failed(l),
-      (r) => state = const ConnectState.wired(),
+  Future<void> connect(Uri uri) async {
+    state = const ConnectState.connecting();
+    final failOrSuccess = await _service.connect(uri);
+    state = failOrSuccess.fold(
+      (l) => ConnectState.failed(l),
+      (r) => const ConnectState.wired(),
     );
   }
 
