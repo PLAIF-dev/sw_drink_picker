@@ -1,6 +1,6 @@
-import 'package:drink_picker/pick/application/entity/pick_failure.dart';
-import 'package:drink_picker/pick/domain/repository/pick_repository.dart';
-import 'package:drink_picker/pick/domain/value_object/exception.dart';
+import 'package:drink_picker/pick/actor/application/entity/pick_failure.dart';
+import 'package:drink_picker/pick/actor/domain/repository/pick_repository.dart';
+import 'package:drink_picker/pick/core/domain/value_object/exception.dart';
 import 'package:fpdart/fpdart.dart';
 
 abstract class PickService {

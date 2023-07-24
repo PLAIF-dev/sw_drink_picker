@@ -1,7 +1,7 @@
 import 'package:drink_picker/connection/application/bloc/connect_state.dart';
 import 'package:drink_picker/connection/dependency_injection.dart';
 import 'package:drink_picker/connection/presentation/widget/connection_screen.dart';
-import 'package:drink_picker/pick/presentation/widget/pick_screen.dart';
+import 'package:drink_picker/pick/core/presentation/widget/pick_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

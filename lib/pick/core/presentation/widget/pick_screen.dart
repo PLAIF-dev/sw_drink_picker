@@ -1,4 +1,4 @@
-import 'package:drink_picker/pick/application/bloc/watcher/pick_event.dart';
+import 'package:drink_picker/pick/actor/application/bloc/pick_event.dart';
 import 'package:drink_picker/pick/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

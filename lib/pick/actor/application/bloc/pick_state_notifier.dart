@@ -1,6 +1,6 @@
-import 'package:drink_picker/pick/application/bloc/watcher/pick_event.dart';
-import 'package:drink_picker/pick/application/bloc/watcher/pick_state.dart';
-import 'package:drink_picker/pick/application/service/pick_service.dart';
+import 'package:drink_picker/pick/actor/application/bloc/pick_event.dart';
+import 'package:drink_picker/pick/actor/application/bloc/pick_state.dart';
+import 'package:drink_picker/pick/actor/application/service/pick_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PickStateNotifier extends StateNotifier<PickState> {

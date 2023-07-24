@@ -7,11 +7,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: PlaifTheme.light,
-      darkTheme: PlaifTheme.dark,
-      themeMode: ThemeMode.system,
-      home: const DebugOrReleaseScreen(),
+    return SafeArea(
+      child: MaterialApp(
+        theme: PlaifTheme.light,
+        darkTheme: PlaifTheme.dark,
+        themeMode: ThemeMode.system,
+        home: const DebugOrReleaseScreen(),
+      ),
     );
   }
 }

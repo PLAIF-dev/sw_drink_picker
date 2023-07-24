@@ -1,4 +1,4 @@
-import 'package:drink_picker/pick/application/entity/pick_failure.dart';
+import 'package:drink_picker/pick/actor/application/entity/pick_failure.dart';
 
 abstract class PickState {
   const factory PickState.idle() = PickIdleState._;
