@@ -1,4 +1,4 @@
-import 'package:drink_picker/pick/application/bloc/watcher/pick_state_notifier.dart';
+import 'package:drink_picker/pick/actor/application/bloc/pick_state_notifier.dart';
 
 abstract class PickEvent {
   const factory PickEvent.pick(int index) = PickPickEvent._;
