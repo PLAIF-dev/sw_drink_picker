@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:drink_picker/connection/domain/value_object/exception.dart';
 import 'package:drink_picker/connection/infrastructure/datastore/communication_channel.dart';
 
@@ -45,6 +44,6 @@ class WebsocketCommunicationChannel implements CommunicationChannel {
 
     _socket!.add(message);
 
-    return _socket!;
+    return _socket!.asBroadcastStream();
   }
 }
