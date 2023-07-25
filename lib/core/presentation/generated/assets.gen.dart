@@ -12,11 +12,16 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/lg_logo.png
-  AssetGenImage get lgLogo => const AssetGenImage('assets/images/lg_logo.png');
+  /// File path: assets/images/plaif_circle.png
+  AssetGenImage get plaifCircle =>
+      const AssetGenImage('assets/images/plaif_circle.png');
+
+  /// File path: assets/images/plaif_text.png
+  AssetGenImage get plaifText =>
+      const AssetGenImage('assets/images/plaif_text.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [lgLogo];
+  List<AssetGenImage> get values => [plaifCircle, plaifText];
 }
 
 class Assets {
