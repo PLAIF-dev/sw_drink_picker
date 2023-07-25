@@ -6,41 +6,57 @@ import 'package:drink_picker/pick/watcher/application/service/pick_watch_service
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PickWatchStateNotifier extends StateNotifier<PickWatchState> {
-  PickWatchStateNotifier(this._service) : super(const PickWatchState.ready());
+  PickWatchStateNotifier(this._service) : super(const PickWatchState.none());
 
   final PickWatchService _service;
+  late StreamController _controller;
 
   void mapEventToState(PickWatchEvent event) {
     event.handle(this);
   }
 
-  void listenRemoteChanges() {
-    late final StreamController controller;
-    controller = StreamController(
-      onCancel: () => controller.close(),
+  void subscribe() {
+    _controller = StreamController(
+      onCancel: () => _controller.close(),
     );
 
-    final resultStream = _service.watchState();
+    final resultStream = _service.subscribeState();
 
     late StreamSubscription subscription;
 
-    subscription = resultStream.listen((failOrSuccess) {
+    subscription = resultStream.listen(
+      (failOrSuccess) {
+        state = failOrSuccess.fold(
+          (l) => PickWatchState.failed(l),
+          (r) {
+            if (r.isBusy) {
+              return PickWatchState.busy(r.index);
+            } else {
+              return const PickWatchState.ready();
+            }
+          },
+        );
+      },
+      onDone: () {
+        _controller.close();
+        subscription.cancel();
+      },
+      onError: (_) {
+        _controller.close();
+        subscription.cancel();
+      },
+    );
+  }
+
+  void unsubscribe() async {
+    _controller.close();
+
+    final failOrSuccess = await _service.unsubscribe();
+    if (mounted) {
       state = failOrSuccess.fold(
         (l) => PickWatchState.failed(l),
-        (r) {
-          if (r.isBusy) {
-            return PickWatchState.busy(r.index);
-          } else {
-            return const PickWatchState.ready();
-          }
-        },
+        (_) => const PickWatchState.none(),
       );
-    }, onDone: () {
-      controller.close();
-      subscription.cancel();
-    }, onError: (_) {
-      controller.close();
-      subscription.cancel();
-    });
+    }
   }
 }

@@ -10,14 +10,14 @@ class PickWatchRepositoryImpl implements PickWatchRepository {
   PickWatchRepositoryImpl(this._channel);
 
   final CommunicationChannel _channel;
+  late StreamController<MachineIoState> _controller;
   bool? _hasBeenWorking;
 
   @override
-  Stream<MachineIoState> listenState() {
-    late StreamController<MachineIoState> controller;
+  Stream<MachineIoState> subscribe() {
     try {
-      controller = StreamController(
-        onCancel: () => controller.close(),
+      _controller = StreamController(
+        onCancel: () => _controller.close(),
       );
 
       const request = Request(
@@ -64,21 +64,26 @@ class PickWatchRepositoryImpl implements PickWatchRepository {
             ioState = const MachineIoState.empty();
           }
 
-          controller.add(ioState);
+          _controller.add(ioState);
         },
         onDone: () {
           subscription.cancel();
-          controller.close();
+          _controller.close();
         },
         onError: (_) {
           subscription.cancel();
-          controller.close();
+          _controller.close();
         },
       );
 
-      return controller.stream.asBroadcastStream();
+      return _controller.stream.asBroadcastStream();
     } catch (e) {
       throw UnimplementedError();
     }
+  }
+
+  @override
+  FutureOr<void> unsubscribe() async {
+    _controller.close();
   }
 }

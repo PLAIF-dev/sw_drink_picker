@@ -67,42 +67,45 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('IP Address', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 12),
-          for (var i = 0; i < _inputFieldCount; i++)
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(isLast(i) ? 'Port' : 'Field $i'),
-                const SizedBox(width: 12),
-                SizedBox(
-                  width: 100,
-                  child: TextField(
-                    controller: _controllers[i],
-                    textInputAction:
-                        isLast(i) ? TextInputAction.done : TextInputAction.next,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    maxLength: isLast(i) ? 5 : 3,
-                    textAlign: TextAlign.right,
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('IP Address', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            for (var i = 0; i < _inputFieldCount; i++)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(isLast(i) ? 'Port' : 'Field $i'),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 100,
+                    child: TextField(
+                      controller: _controllers[i],
+                      textInputAction: isLast(i)
+                          ? TextInputAction.done
+                          : TextInputAction.next,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      maxLength: isLast(i) ? 5 : 3,
+                      textAlign: TextAlign.right,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _onPressed,
+              child: Text(buttonTitle),
             ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _onPressed,
-            child: Text(buttonTitle),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
