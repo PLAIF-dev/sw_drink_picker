@@ -32,10 +32,8 @@ class HomeScreen extends StatelessWidget {
         );
 
         return Scaffold(
-          body: Center(
-            child: _buildPageByState(
-              ref.watch(connectStateNotifierProvider),
-            ),
+          body: _buildPageByState(
+            ref.watch(connectStateNotifierProvider),
           ),
         );
       },

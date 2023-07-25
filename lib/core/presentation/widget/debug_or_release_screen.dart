@@ -92,7 +92,7 @@ class DebugOrReleaseScreen extends StatelessWidget {
 
         // pick state watcher
         pickWatchRepositoryProvider.overrideWithValue(
-          const PickWatchRepositoryFakeImpl(),
+          PickWatchRepositoryFakeImpl(),
         ),
         pickWatchServiceProvider.overrideWith(
           (ref) => PickWatchServiceImpl(
