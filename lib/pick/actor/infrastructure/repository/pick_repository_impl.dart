@@ -14,7 +14,7 @@ class PickRepositoryImpl implements PickRepository {
     final request = Request(
       op: 'call_service',
       // test
-      id: 'call_service:/ur_hardware_interface/io_states:0',
+      id: 'call_service:/ur_hardware_interface/set_io:0',
       service: '/ur_hardware_interface/set_io',
       type: '/ur_msgs/IOStates',
       args: {
@@ -24,7 +24,10 @@ class PickRepositoryImpl implements PickRepository {
       },
     );
 
-    final result = await _channel.fetch(request.encode());
+    final result = await _channel.listen(request.encode()).firstWhere(
+        (element) => (json.decode(element) as Map<String, dynamic>)
+            .keys
+            .contains("values"));
 
     final isDone =
         (json.decode(result)["values"] as Map<String, dynamic>)['success'];

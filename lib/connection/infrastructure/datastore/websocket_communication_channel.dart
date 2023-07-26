@@ -4,15 +4,18 @@ import 'package:drink_picker/connection/domain/value_object/exception.dart';
 import 'package:drink_picker/connection/infrastructure/datastore/communication_channel.dart';
 
 class WebsocketCommunicationChannel implements CommunicationChannel {
+  StreamController<dynamic>? _controller;
   WebSocket? _socket;
 
   @override
-  bool get isInitialized => _socket != null;
+  bool get isInitialized => _socket != null && _controller != null;
 
   @override
   Future<void> initialize(Uri uri) async {
     try {
+      _controller = StreamController.broadcast();
       _socket = await WebSocket.connect(uri.toString());
+      _controller?.addStream(_socket!.asBroadcastStream());
     } on SocketException {
       throw const InvalidConnectionException();
     }
@@ -22,6 +25,8 @@ class WebsocketCommunicationChannel implements CommunicationChannel {
   FutureOr<void> dispose() {
     _socket?.close();
     _socket = null;
+    _controller?.close();
+    _controller = null;
   }
 
   @override
@@ -44,6 +49,6 @@ class WebsocketCommunicationChannel implements CommunicationChannel {
 
     _socket!.add(message);
 
-    return _socket!.asBroadcastStream();
+    return _controller!.stream;
   }
 }

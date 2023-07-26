@@ -4,6 +4,8 @@ abstract class PickWatchState {
   const factory PickWatchState.none() = PickWatchNoneState._;
   const factory PickWatchState.ready() = PickWatchReadyState._;
   const factory PickWatchState.busy(int workingIndex) = PickWatchBusyState._;
+  const factory PickWatchState.blocked(int holdingIndex) =
+      PickWatchBlockedState._;
   const factory PickWatchState.failed(PickWatchFailure failure) =
       PickWatchFailedState._;
 
@@ -30,7 +32,16 @@ class PickWatchBusyState implements PickWatchState {
   final int workingIndex;
 
   @override
-  String get message => 'Ready to send request';
+  String get message => 'Working';
+}
+
+class PickWatchBlockedState implements PickWatchState {
+  const PickWatchBlockedState._(this.holdingIndex);
+
+  final int holdingIndex;
+
+  @override
+  String get message => 'Process is blocked';
 }
 
 class PickWatchFailedState implements PickWatchState {

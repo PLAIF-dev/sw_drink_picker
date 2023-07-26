@@ -1,6 +1,7 @@
 import 'package:drink_picker/connection/application/bloc/connect_event.dart';
 import 'package:drink_picker/connection/application/bloc/connect_state.dart';
 import 'package:drink_picker/connection/dependency_injection.dart';
+import 'package:drink_picker/core/presentation/generated/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,14 +15,14 @@ class ConnectionScreen extends ConsumerStatefulWidget {
 
 class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
   final List<TextEditingController> _controllers = [];
-
-  static const _inputFieldCount = 5;
+  final fields = [192, 168, 0, 2, 9092];
 
   @override
   void initState() {
     super.initState();
-    for (var i = 0; i < _inputFieldCount; i++) {
-      _controllers.add(TextEditingController());
+    for (var i = 0; i < fields.length; i++) {
+      final textController = TextEditingController(text: fields[i].toString());
+      _controllers.add(textController);
     }
   }
 
@@ -33,7 +34,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
     super.dispose();
   }
 
-  bool isLast(int other) => other > _inputFieldCount - 2;
+  bool isLast(int other) => other > fields.length - 2;
 
   String get combinedUri {
     return _controllers.indexed.fold(
@@ -67,45 +68,59 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('IP Address', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 12),
-            for (var i = 0; i < _inputFieldCount; i++)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(isLast(i) ? 'Port' : 'Field $i'),
-                  const SizedBox(width: 12),
-                  SizedBox(
-                    width: 100,
-                    child: TextField(
-                      controller: _controllers[i],
-                      textInputAction: isLast(i)
-                          ? TextInputAction.done
-                          : TextInputAction.next,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      maxLength: isLast(i) ? 5 : 3,
-                      textAlign: TextAlign.right,
-                    ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 200,
+            height: 200,
+            child: Image.asset(
+              Assets.images.plaifCircleCrop.path,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '로봇 연결 하기',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          for (var i = 0; i < fields.length; i++)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(isLast(i) ? 'Port' : 'Field $i'),
+                const SizedBox(width: 20),
+                SizedBox(
+                  width: 100,
+                  child: TextField(
+                    controller: _controllers[i],
+                    textInputAction:
+                        isLast(i) ? TextInputAction.done : TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    maxLength: isLast(i) ? 5 : 3,
+                    textAlign: TextAlign.right,
                   ),
-                ],
-              ),
-            const SizedBox(height: 24),
-            ElevatedButton(
+                ),
+              ],
+            ),
+          const SizedBox(height: 24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 300),
+            child: ElevatedButton(
               onPressed: _onPressed,
               child: Text(buttonTitle),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

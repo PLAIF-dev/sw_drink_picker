@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.isDebug = false});
+
+  final bool isDebug;
 
   Widget _buildPageByState(ConnectState state) {
     if (state is ConnectWiredState) {
@@ -18,25 +20,27 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer(
-      builder: (context, ref, child) {
-        ref.listen(
-          connectStateNotifierProvider,
-          (previous, current) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(current.message),
-              ),
-            );
-          },
-        );
+    return Scaffold(
+      body: Consumer(
+        builder: (context, ref, child) {
+          final state = ref.watch(connectStateNotifierProvider);
 
-        return Scaffold(
-          body: _buildPageByState(
-            ref.watch(connectStateNotifierProvider),
-          ),
-        );
-      },
+          ref.listen(
+            connectStateNotifierProvider,
+            (previous, current) {
+              if (current is! ConnectConnectingState) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(current.message),
+                  ),
+                );
+              }
+            },
+          );
+
+          return _buildPageByState(state);
+        },
+      ),
     );
   }
 }

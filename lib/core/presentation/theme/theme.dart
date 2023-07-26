@@ -176,27 +176,27 @@ class PlaifTheme {
           height: 1.2,
         ),
         bodyLarge: original.textTheme.bodyLarge?.copyWith(
-          fontWeight: FontWeight.w200,
+          fontWeight: FontWeight.w300,
           fontSize: 1.1 * kFontBodySize,
         ),
         bodyMedium: original.textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w200,
+          fontWeight: FontWeight.w300,
           fontSize: kFontBodySize,
         ),
         bodySmall: original.textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w200,
+          fontWeight: FontWeight.w300,
           fontSize: 0.9 * kFontBodySize,
         ),
         labelLarge: original.textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w300,
+          fontWeight: FontWeight.w400,
           fontSize: kFontLabelSize,
         ),
         labelMedium: original.textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w300,
+          fontWeight: FontWeight.w400,
           fontSize: 0.9 * kFontLabelSize,
         ),
         labelSmall: original.textTheme.labelSmall?.copyWith(
-          fontWeight: FontWeight.w300,
+          fontWeight: FontWeight.w400,
           fontSize: 0.8 * kFontLabelSize,
         ),
       ),

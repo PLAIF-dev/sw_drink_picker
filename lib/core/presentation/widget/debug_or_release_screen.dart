@@ -1,7 +1,6 @@
 import 'package:drink_picker/connection/application/bloc/connect_state_notifier.dart';
 import 'package:drink_picker/connection/application/service/connect_service.dart';
 import 'package:drink_picker/connection/dependency_injection.dart';
-import 'package:drink_picker/connection/infrastructure/repository/connection_repository_fake_fail_impl.dart';
 import 'package:drink_picker/connection/infrastructure/repository/connection_repository_fake_success_impl.dart';
 import 'package:drink_picker/core/presentation/widget/home_screen.dart';
 import 'package:drink_picker/pick/actor/application/bloc/pick_state_notifier.dart';
@@ -38,11 +37,11 @@ class DebugOrReleaseScreen extends StatelessWidget {
                 onPressed: () => onTap(context, alwaysSuccessButton),
                 child: const Text('Debug Mode: Succeed all commands'),
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => onTap(context, alwaysFailButton),
-                child: const Text('Debug Mode: Fail all commands'),
-              ),
+              // const SizedBox(height: 8),
+              // ElevatedButton(
+              //   onPressed: () => onTap(context, alwaysFailButton),
+              //   child: const Text('Debug Mode: Fail all commands'),
+              // ),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => onTap(context, const HomeScreen()),
@@ -75,21 +74,6 @@ class DebugOrReleaseScreen extends StatelessWidget {
           ),
         ),
 
-        // pick
-        pickRepositoryProvider.overrideWithValue(
-          const PickRepositoryFakeImpl(),
-        ),
-        pickServiceProvider.overrideWith(
-          (ref) => PickServiceImpl(
-            ref.watch(pickRepositoryProvider),
-          ),
-        ),
-        pickStateNotifierProvider.overrideWith(
-          (ref) => PickStateNotifier(
-            ref.watch(pickServiceProvider),
-          ),
-        ),
-
         // pick state watcher
         pickWatchRepositoryProvider.overrideWithValue(
           PickWatchRepositoryFakeImpl(),
@@ -104,29 +88,49 @@ class DebugOrReleaseScreen extends StatelessWidget {
             ref.watch(pickWatchServiceProvider),
           ),
         ),
+
+        // pick
+        pickRepositoryProvider.overrideWith(
+          (ref) => PickRepositoryFakeImpl(
+            ref.watch(pickWatchRepositoryProvider)
+                as PickWatchRepositoryFakeImpl,
+          ),
+        ),
+        pickServiceProvider.overrideWith(
+          (ref) => PickServiceImpl(
+            ref.watch(pickRepositoryProvider),
+          ),
+        ),
+        pickStateNotifierProvider.overrideWith(
+          (ref) => PickStateNotifier(
+            ref.watch(pickServiceProvider),
+          ),
+        ),
       ],
-      child: const HomeScreen(),
+      child: const HomeScreen(isDebug: true),
     );
   }
 
-  Widget get alwaysFailButton {
-    return ProviderScope(
-      overrides: [
-        connectRepositoryProvider.overrideWithValue(
-          const ConnectionRepositoryFakeFailImpl(),
-        ),
-        connectServiceProvider.overrideWith(
-          (ref) => ConnectServiceImpl(
-            ref.watch(connectRepositoryProvider),
-          ),
-        ),
-        connectStateNotifierProvider.overrideWith(
-          (ref) => ConnectStateNotifier(
-            ref.watch(connectServiceProvider),
-          ),
-        ),
-      ],
-      child: const HomeScreen(),
-    );
-  }
+  // Widget get alwaysFailButton {
+  //   return ProviderScope(
+  //     overrides: [
+  //       connectRepositoryProvider.overrideWithValue(
+  //         const ConnectionRepositoryFakeFailImpl(),
+  //       ),
+  //       connectServiceProvider.overrideWith(
+  //         (ref) => ConnectServiceImpl(
+  //           ref.watch(connectRepositoryProvider),
+  //         ),
+  //       ),
+  //       connectStateNotifierProvider.overrideWith(
+  //         (ref) => ConnectStateNotifier(
+  //           ref.watch(connectServiceProvider),
+  //         ),
+  //       ),
+  //     ],
+  //     child: const HomeScreen(
+  //       isDebug: true,
+  //     ),
+  //   );
+  // }
 }

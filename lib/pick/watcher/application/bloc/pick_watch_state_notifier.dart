@@ -16,7 +16,7 @@ class PickWatchStateNotifier extends StateNotifier<PickWatchState> {
   }
 
   void subscribe() {
-    _controller = StreamController(
+    _controller = StreamController.broadcast(
       onCancel: () => _controller.close(),
     );
 
@@ -29,11 +29,13 @@ class PickWatchStateNotifier extends StateNotifier<PickWatchState> {
         state = failOrSuccess.fold(
           (l) => PickWatchState.failed(l),
           (r) {
+            if (r.isBlocked) {
+              return PickWatchState.blocked(r.index);
+            }
             if (r.isBusy) {
               return PickWatchState.busy(r.index);
-            } else {
-              return const PickWatchState.ready();
             }
+            return const PickWatchState.ready();
           },
         );
       },

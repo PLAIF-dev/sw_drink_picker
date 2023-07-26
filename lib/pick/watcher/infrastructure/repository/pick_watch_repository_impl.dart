@@ -4,19 +4,20 @@ import 'dart:convert';
 import 'package:drink_picker/connection/infrastructure/datastore/communication_channel.dart';
 import 'package:drink_picker/core/infrastructure/entity/request.dart';
 import 'package:drink_picker/pick/watcher/domain/repository/pick_watch_repository.dart';
-import 'package:drink_picker/pick/watcher/domain/value_object/machine_io_state.dart';
+import 'package:drink_picker/pick/watcher/domain/value_object/machine_state.dart';
 
 class PickWatchRepositoryImpl implements PickWatchRepository {
   PickWatchRepositoryImpl(this._channel);
 
   final CommunicationChannel _channel;
-  late StreamController<MachineIoState> _controller;
+  late StreamController<MachineState> _controller;
   bool? _hasBeenWorking;
+  int? _workingPin;
 
   @override
-  Stream<MachineIoState> subscribe() {
+  Stream<MachineState> subscribe() {
     try {
-      _controller = StreamController(
+      _controller = StreamController.broadcast(
         onCancel: () => _controller.close(),
       );
 
@@ -31,17 +32,30 @@ class PickWatchRepositoryImpl implements PickWatchRepository {
       late StreamSubscription subscription;
       subscription = result.listen(
         (value) {
-          final inStates =
-              json.decode(value)['msg']['digital_in_states'] as List<dynamic>;
+          // final inStates =
+          //     json.decode(value)['msg']['digital_out_states'] as List<dynamic>;
+          final data = json.decode(value)['msg'];
 
-          /// Business Rule: `digital io 5번 pin` 이 로봇 작업 중인지 아닌지 판단하는 flag
+          if (data == null) {
+            return;
+          }
+
+          if (!data.keys.contains('digital_out_states')) {
+            return;
+          }
+
+          final pinStates = data['digital_out_states'] as List<dynamic>;
+
+          /// Business Rule: `digital output 5번 pin` 은
+          ///                로봇이 움직이는 중인지 판단하는 flag
+          ///
           /// ```json
           /// {
           ///   'state': true,
           ///   'pin': 5
           /// }
           /// ```
-          final isWorking = inStates.removeAt(5)['state'] as bool;
+          final isWorking = pinStates.removeAt(5)['state'] as bool;
 
           if (isWorking == _hasBeenWorking) {
             return;
@@ -49,22 +63,36 @@ class PickWatchRepositoryImpl implements PickWatchRepository {
 
           _hasBeenWorking = isWorking;
 
-          MachineIoState ioState;
+          MachineState pinState;
 
           if (isWorking) {
             final index =
-                inStates.indexWhere((inState) => inState['state'] as bool);
+                pinStates.indexWhere((inState) => inState['state'] as bool);
 
             if (index < 0) {
-              ioState = MachineIoState.busy(index);
+              _workingPin = null;
+              pinState = const MachineState.empty();
             } else {
-              ioState = const MachineIoState.empty();
+              _workingPin = index;
+              pinState = MachineState.busy(index);
             }
           } else {
-            ioState = const MachineIoState.empty();
+            /// Business Rule: `digital output 6번 pin` 이 켜져있는 경우,
+            ///                로봇이 움직이는 것은 멈췄지만, 방해로 물건을 놓지 못하고
+            ///                집게에 들고 있는 경우임
+            ///
+            /// 이전에 List 에서 5번 pin 을 pop 했기 때문에, 6번을 꺼내는 index는 5번
+            final isPaused = pinStates.removeAt(5)['state'] as bool;
+
+            if (isPaused) {
+              pinState = MachineState.blocked(_workingPin!);
+            } else {
+              _workingPin = null;
+              pinState = const MachineState.empty();
+            }
           }
 
-          _controller.add(ioState);
+          _controller.add(pinState);
         },
         onDone: () {
           subscription.cancel();
@@ -76,7 +104,7 @@ class PickWatchRepositoryImpl implements PickWatchRepository {
         },
       );
 
-      return _controller.stream.asBroadcastStream();
+      return _controller.stream;
     } catch (e) {
       throw UnimplementedError();
     }
