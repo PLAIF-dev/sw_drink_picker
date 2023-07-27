@@ -1,7 +1,18 @@
 # /ur_hardware_interface/io_states
 
-call type: topic
-data type: ur_msgs/IOStates
+> 본 내용은 로봇(UR5)에 Websocket을 이용하여 특정 요청을 보내기 위한 명세를 담고 있습니다.
+
+## Description
+
+UR 에서 Input/Output 결과를 받아오는 요청
+
+- 음료수 운반작업이 완료되었는지 아닌지 확인하기 위해 사용함
+
+## Type
+
+Topic - Subscribe
+
+## Request format
 
 ```json
 {
@@ -10,6 +21,10 @@ data type: ur_msgs/IOStates
     "type" : "ur_msgs/IOStates"
 }
 ```
+
+## Result
+
+- Example
 
 ```json
 {
