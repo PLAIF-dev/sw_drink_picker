@@ -6,7 +6,10 @@
 
 ## Screenshots
 
+https://github.com/PLAIF-dev/sw_drink_picker/assets/52237605/2f352192-eae9-4df9-a47c-a164ecf19664
+
 음료 선택 대기
+
 ![음료 선택 대기](/docs/screenshots/ready_2.png)
 
 3번 음료 선택
